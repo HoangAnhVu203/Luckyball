@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4913021767129494045}
   - component: {fileID: 8019307028354628894}
   - component: {fileID: 2394231438693439982}
+  - component: {fileID: 6241549450313069134}
   m_Layer: 5
   m_Name: Panel - Win
   m_TagString: Untagged
@@ -78,6 +79,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6241549450313069134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006027218550611937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a96dee99fe2433183e096322d76cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isDestroyOnClose: 0
 --- !u!1 &1847419520867409698
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,7 +207,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: -706}
+  m_AnchoredPosition: {x: 280, y: -515}
   m_SizeDelta: {x: 350, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &225834956370360277
@@ -277,7 +291,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4192517981165917430}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6241549450313069134}
+        m_TargetAssemblyTypeName: CanvasWin, Assembly-CSharp
+        m_MethodName: NextLVBTN
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3331282478467629052
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +419,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: -706}
+  m_AnchoredPosition: {x: -280, y: -515}
   m_SizeDelta: {x: 350, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1282353852608544507
@@ -477,7 +503,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 851128559624451180}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6241549450313069134}
+        m_TargetAssemblyTypeName: CanvasWin, Assembly-CSharp
+        m_MethodName: PrevLVBTN
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8665910270871653976
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +550,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 15, y: 511}
+  m_AnchoredPosition: {x: 15, y: 559}
   m_SizeDelta: {x: 1000, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6295774500883252528

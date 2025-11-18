@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameManager;
 
 [RequireComponent(typeof(SpriteRenderer))]
 [RequireComponent(typeof(PolygonCollider2D))]
 public class Erase : MonoBehaviour
 {
+    public static Erase Instance { get; private set; }
+
     [Header("Brush Settings")]
     [SerializeField] int brushRadius = 40;
 
@@ -22,18 +25,22 @@ public class Erase : MonoBehaviour
 
     void Awake()
     {
+        Instance = this;
         sr = GetComponent<SpriteRenderer>();
         InitRuntimeTexture();
     }
 
     void Update()
     {
+        if (GameManager.Instance != null &&
+            GameManager.Instance.CurrentState != GameState.Gameplay)
+            return;
+
         if (Input.GetMouseButton(0))
         {
             Vector2 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (PaintEraseAtWorld(world))
             {
-                // Xoá collider cũ và tạo mới collider mới
                 var oldCollider = GetComponent<PolygonCollider2D>();
                 if (oldCollider != null)
                     Destroy(oldCollider);
@@ -44,20 +51,21 @@ public class Erase : MonoBehaviour
         }
     }
 
+
     // Khởi tạo texture runtime có thể thay đổi alpha
     void InitRuntimeTexture()
     {
         originalSprite = sr.sprite;
         if (!originalSprite)
         {
-            enabled = false; 
+            enabled = false;
             return;
         }
 
         Texture2D src = originalSprite.texture;
         if (!src.isReadable)
         {
-            enabled = false; 
+            enabled = false;
             return;
         }
 
@@ -131,12 +139,38 @@ public class Erase : MonoBehaviour
     // Hiển thị bán kính cọ trong Scene View
     void OnDrawGizmosSelected()
     {
-        if (!showBrushGizmo || !Camera.main) return;
+        if (!showBrushGizmo) return;
+
+        // đảm bảo có SpriteRenderer
         if (!sr) sr = GetComponent<SpriteRenderer>();
-        Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        world.z = 0;
+
+        Camera cam = Camera.main;
+        if (!cam) return;
+
+        Vector3 mouse = Input.mousePosition;
+
+        // tránh NaN / Infinity
+        if (float.IsNaN(mouse.x) || float.IsNaN(mouse.y) ||
+            float.IsInfinity(mouse.x) || float.IsInfinity(mouse.y))
+            return;
+
+        // khoảng cách từ camera đến sprite, dùng làm z cho ScreenToWorldPoint
+        float z = Mathf.Abs((sr ? sr.transform.position.z : 0f) - cam.transform.position.z);
+        if (z < cam.nearClipPlane) z = cam.nearClipPlane + 0.01f;
+        if (z > cam.farClipPlane) z = cam.farClipPlane - 0.01f;
+        mouse.z = z;
+
+        Vector3 world = cam.ScreenToWorldPoint(mouse);
+
+        // giữ gizmo trên mặt phẳng sprite
+        if (sr) world.z = sr.transform.position.z;
+        else world.z = 0;
+
         Gizmos.color = Color.yellow;
-        float r = (sr && sr.sprite) ? brushRadius / sr.sprite.pixelsPerUnit : brushRadius * 0.01f;
+        float r = (sr && sr.sprite)
+            ? brushRadius / sr.sprite.pixelsPerUnit
+            : brushRadius * 0.01f;
+
         Gizmos.DrawWireSphere(world, r);
     }
 }

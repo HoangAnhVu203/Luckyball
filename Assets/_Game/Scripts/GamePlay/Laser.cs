@@ -176,10 +176,18 @@ public class Laser : MonoBehaviour
     {
         if (!explosionPrefab) return;
 
+        // tìm parent an toàn cho mọi VFX runtime
+        Transform parent = null;
+        if (LevelManager.Instance != null)
+            parent = LevelManager.Instance.runtimeRoot;   // <<< quan trọng
+
         if (reuseExplosion)
         {
             if (!explosionInstance)
-                explosionInstance = Instantiate(explosionPrefab, pos, rot);
+            {
+                // gán parent = runtimeRoot
+                explosionInstance = Instantiate(explosionPrefab, pos, rot, parent);
+            }
             else
             {
                 explosionInstance.transform.SetPositionAndRotation(pos, rot);
@@ -189,8 +197,9 @@ public class Laser : MonoBehaviour
         }
         else
         {
-            var fx = Instantiate(explosionPrefab, pos, rot);
+            var fx = Instantiate(explosionPrefab, pos, rot, parent);
             if (destroyExplosionAfter > 0) Destroy(fx, destroyExplosionAfter);
         }
     }
+
 }

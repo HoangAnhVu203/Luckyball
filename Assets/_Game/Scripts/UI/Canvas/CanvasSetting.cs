@@ -6,6 +6,7 @@ public class CanvasSetting : UICanvas
 {
     public void CloseUI()
     {
+        GameManager.Instance.ResumeGame();
         UIManager.Instance.CloseUIDirectly<CanvasSetting>();
     }
 }

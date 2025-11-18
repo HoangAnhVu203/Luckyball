@@ -1001,6 +1001,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5889205193563838331}
     m_Modifications:
+    - target: {fileID: 1880918932234705805, guid: e6a87589ec65a4490aaedaf7dcac2ee6, type: 3}
+      propertyPath: smokePrefab
+      value: 
+      objectReference: {fileID: 5055883043617367750, guid: 5d634a215a33442649b12d487882c20d, type: 3}
     - target: {fileID: 6073476257410501666, guid: e6a87589ec65a4490aaedaf7dcac2ee6, type: 3}
       propertyPath: m_Name
       value: Laser
