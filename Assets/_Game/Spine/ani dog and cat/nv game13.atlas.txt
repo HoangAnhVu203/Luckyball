@@ -1,0 +1,62 @@
+
+nv game13.png
+size: 323,259
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+cat1
+  rotate: false
+  xy: 165, 129
+  size: 134, 128
+  orig: 134, 128
+  offset: 0, 0
+  index: -1
+cat2
+  rotate: false
+  xy: 165, 2
+  size: 134, 125
+  orig: 134, 125
+  offset: 0, 0
+  index: -1
+dog1
+  rotate: false
+  xy: 2, 2
+  size: 161, 125
+  orig: 161, 125
+  offset: 0, 0
+  index: -1
+dog2
+  rotate: false
+  xy: 2, 129
+  size: 161, 128
+  orig: 161, 128
+  offset: 0, 0
+  index: -1
+eyecat1
+  rotate: true
+  xy: 301, 203
+  size: 54, 20
+  orig: 54, 20
+  offset: 0, 0
+  index: -1
+eyecat2
+  rotate: true
+  xy: 301, 154
+  size: 47, 17
+  orig: 47, 17
+  offset: 0, 0
+  index: -1
+eyedog1
+  rotate: true
+  xy: 301, 105
+  size: 47, 17
+  orig: 47, 17
+  offset: 0, 0
+  index: -1
+eyedog2
+  rotate: true
+  xy: 301, 56
+  size: 47, 17
+  orig: 47, 17
+  offset: 0, 0
+  index: -1
