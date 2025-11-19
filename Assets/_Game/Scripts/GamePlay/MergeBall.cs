@@ -1,13 +1,15 @@
 using System.Collections;
 using UnityEngine;
+using Spine.Unity;   // 👈 nhớ import Spine Unity
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
 public class MergeBall : MonoBehaviour
 {
     [Header("Layers")]
-    [SerializeField] string blueLayerName = "BlueBall";
-    [SerializeField] string redLayerName  = "RedBall";
+    [SerializeField] string blueLayerName  = "BlueBall";
+    [SerializeField] string redLayerName   = "RedBall";
+    [SerializeField] string enemyLayerName = "Enemy";   // 👈 thêm tên layer Enemy
 
     [Header("Merge Settings")]
     [SerializeField, Range(0.05f, 1.5f)] float mergeDuration = 0.25f; // thời gian hút
@@ -16,23 +18,42 @@ public class MergeBall : MonoBehaviour
     [Header("VFX")]
     public GameObject vfxPrefab; // VFX sẽ spawn sau khi biến mất
 
-    bool _isMerging = false;     // chặn chạy trùng
+    [Header("Spine Color When Hit Enemy")]
+    public Color enemyHitColor = Color.gray;  // màu xám khi chạm Enemy
+
+    bool _isMerging = false;                  // chặn chạy trùng
     static readonly System.Collections.Generic.HashSet<int> _busy = new(); // tránh đôi va chạm chạy 2 lần
 
-    int blueLayer, redLayer;
+    int blueLayer, redLayer, enemyLayer;
     Rigidbody2D rb;
     Collider2D col;
 
+    // Spine
+    SkeletonAnimation skeletonAnim;
+    Color originalColor;
+    bool colorChangedByEnemy = false;
+
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb  = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
 
-        blueLayer = LayerMask.NameToLayer(blueLayerName);
-        redLayer  = LayerMask.NameToLayer(redLayerName);
+        blueLayer  = LayerMask.NameToLayer(blueLayerName);
+        redLayer   = LayerMask.NameToLayer(redLayerName);
+        enemyLayer = LayerMask.NameToLayer(enemyLayerName);
 
         if (blueLayer == -1 || redLayer == -1)
-            Debug.LogWarning("[BallMagnetMerge2D] Chưa khai báo Layer BlueBall/RedBall trong Project Settings > Tags and Layers.");
+            Debug.LogWarning("[MergeBall] Chưa khai báo Layer BlueBall/RedBall trong Project Settings > Tags and Layers.");
+
+        if (enemyLayer == -1)
+            Debug.LogWarning("[MergeBall] Chưa khai báo Layer Enemy trong Project Settings > Tags and Layers.");
+
+        // Lấy Spine SkeletonAnimation
+        skeletonAnim = GetComponent<SkeletonAnimation>();
+        if (skeletonAnim != null && skeletonAnim.Skeleton != null)
+        {
+            originalColor = skeletonAnim.Skeleton.GetColor();
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -51,6 +72,14 @@ public class MergeBall : MonoBehaviour
 
         int myL    = gameObject.layer;
         int otherL = other.gameObject.layer;
+
+        if (otherL == enemyLayer)
+        {
+            SetGrayOnEnemyHit();
+            StartCoroutine(WaitforReplay());
+
+            return;
+        }
 
         // Chỉ xử lý nếu là cặp (Blue, Red)
         bool isPair = (myL == blueLayer && otherL == redLayer) ||
@@ -75,8 +104,8 @@ public class MergeBall : MonoBehaviour
         _isMerging = true;
 
         // Lấy component bên kia
-        var otherRB  = other.GetComponent<Rigidbody2D>();
-        var otherCol = other.GetComponent<Collider2D>();
+        var otherRB     = other.GetComponent<Rigidbody2D>();
+        var otherCol    = other.GetComponent<Collider2D>();
         var otherScript = other.GetComponent<MergeBall>();
         if (otherRB == null || otherCol == null || otherScript == null)
         {
@@ -106,7 +135,6 @@ public class MergeBall : MonoBehaviour
         if (vfxPrefab)
             Instantiate(vfxPrefab, mid, vfxPrefab.transform.rotation);
 
-
         // Hủy cả hai
         Destroy(other);
         Destroy(gameObject);
@@ -133,5 +161,30 @@ public class MergeBall : MonoBehaviour
         if (other) _busy.Remove(other.GetInstanceID());
     }
 
-    
+    // ---------- Spine Color ----------
+
+    void SetGrayOnEnemyHit()
+    {
+        if (colorChangedByEnemy) return;   // chỉ đổi 1 lần
+        colorChangedByEnemy = true;
+
+        if (skeletonAnim != null && skeletonAnim.Skeleton != null)
+        {
+            skeletonAnim.Skeleton.SetColor(enemyHitColor);
+            // Nếu bạn dùng shader hỗ trợ Tint/Color, toàn bộ Spine sẽ chuyển xám
+        }
+        else
+        {
+            // fallback: nếu vì lý do gì đó không có Spine, có thể đổi màu SpriteRenderer
+            var sr = GetComponent<SpriteRenderer>();
+            if (sr) sr.color = enemyHitColor;
+        }
+    }
+
+    IEnumerator WaitforReplay()
+    {
+        yield return new WaitForSeconds(2f);
+
+        GameManager.Instance.RePlay();
+    }
 }

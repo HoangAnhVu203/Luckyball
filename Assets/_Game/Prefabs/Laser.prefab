@@ -138,7 +138,7 @@ MonoBehaviour:
   beamOrigin: {fileID: 7173967704823093012}
   directionRef: {fileID: 401149662232212131}
   explosionPrefab: {fileID: 7178254681083901937, guid: 369ad7c9fc1024f29853222dfb21774a, type: 3}
-  smokePrefab: {fileID: 0}
+  smokePrefab: {fileID: 5055883043617367750, guid: 5d634a215a33442649b12d487882c20d, type: 3}
   hitMask:
     serializedVersion: 2
     m_Bits: 456
