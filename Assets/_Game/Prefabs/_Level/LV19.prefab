@@ -1166,7 +1166,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0.012000024, y: 0.012000024, z: 0}
   m_MaxChunkCount: 16
@@ -1544,6 +1544,14 @@ PrefabInstance:
       value: Rock (1)
       objectReference: {fileID: 0}
     - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.79
       objectReference: {fileID: 0}
@@ -1790,6 +1798,14 @@ PrefabInstance:
     - target: {fileID: 5208025488469790786, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
       propertyPath: m_Name
       value: Rock
+      objectReference: {fileID: 0}
+    - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 7377384200045560918, guid: 9b4170f8141a94e55b8d4fadab3f6118, type: 3}
       propertyPath: m_LocalPosition.x
