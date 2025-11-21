@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -147,7 +148,10 @@ public class Laser : MonoBehaviour
             // Hiệu ứng nổ (nếu có)
             SpawnExplosion(hitPos, rot);
 
-            // 🌫️ Hiệu ứng khói tại vị trí bị bắn
+            if(hitLayer == layerBlue || hitLayer == layerRed)
+            {
+                StartCoroutine(WaitReplay());
+            }
             if (smokePrefab)
             {
                 var smoke = Instantiate(smokePrefab, hitPos, Quaternion.identity);
@@ -202,4 +206,10 @@ public class Laser : MonoBehaviour
         }
     }
 
+    IEnumerator WaitReplay()
+    {
+        yield return new WaitForSeconds(2f);
+
+        GameManager.Instance.RePlay();
+    }
 }

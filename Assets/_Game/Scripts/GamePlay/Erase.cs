@@ -18,16 +18,33 @@ public class Erase : MonoBehaviour
     SpriteRenderer sr;
     Texture2D runtimeTex;
     Sprite originalSprite;
+    PolygonCollider2D poly;
+    Camera cam;
 
     Rect spriteRectPx;
     Vector2 spritePivotPx;
     float ppu;
 
+    // buffer pixels để không GetPixels mỗi lần
+    Color32[] pixelsAll;
+    int texW, texH;
+
+    // trạng thái 1 nét vẽ
+    bool strokeActive = false;
+    bool strokeChangedPixels = false;
+
     void Awake()
     {
         Instance = this;
+
         sr = GetComponent<SpriteRenderer>();
+        poly = GetComponent<PolygonCollider2D>();
+        cam = Camera.main;
+
+        if (!poly) poly = gameObject.AddComponent<PolygonCollider2D>();
+
         InitRuntimeTexture();
+        RebuildCollider();  // collider ban đầu
     }
 
     void Update()
@@ -36,23 +53,44 @@ public class Erase : MonoBehaviour
             GameManager.Instance.CurrentState != GameState.Gameplay)
             return;
 
-        if (Input.GetMouseButton(0))
+        if (cam == null) cam = Camera.main;
+        if (cam == null) return;
+
+        // BẮT ĐẦU 1 NÉT XOÁ
+        if (Input.GetMouseButtonDown(0))
         {
-            Vector2 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            strokeActive = true;
+            strokeChangedPixels = false;
+        }
+
+        // ĐANG XOÁ – chỉ đổi texture, KHÔNG rebuild collider
+        if (strokeActive && Input.GetMouseButton(0))
+        {
+            Vector2 world = cam.ScreenToWorldPoint(Input.mousePosition);
             if (PaintEraseAtWorld(world))
             {
-                var oldCollider = GetComponent<PolygonCollider2D>();
-                if (oldCollider != null)
-                    Destroy(oldCollider);
+                strokeChangedPixels = true;
+                // apply ngay để người chơi thấy hình ảnh thay đổi mượt
+                runtimeTex.SetPixels32(pixelsAll);
+                runtimeTex.Apply(false);
+            }
+        }
 
-                var newCollider = gameObject.AddComponent<PolygonCollider2D>();
-                newCollider.isTrigger = false;
+        // KẾT THÚC NÉT XOÁ → rebuild collider 1 LẦN
+        if (strokeActive && Input.GetMouseButtonUp(0))
+        {
+            strokeActive = false;
+
+            if (strokeChangedPixels)
+            {
+                RebuildCollider();   // thao tác nặng nhưng chỉ 1 lần / nét
             }
         }
     }
 
-
-    // Khởi tạo texture runtime có thể thay đổi alpha
+    // ==========================
+    //   KHỞI TẠO TEXTURE
+    // ==========================
     void InitRuntimeTexture()
     {
         originalSprite = sr.sprite;
@@ -65,6 +103,7 @@ public class Erase : MonoBehaviour
         Texture2D src = originalSprite.texture;
         if (!src.isReadable)
         {
+            Debug.LogError($"{name}: Texture chưa bật Read/Write Enabled.");
             enabled = false;
             return;
         }
@@ -73,98 +112,129 @@ public class Erase : MonoBehaviour
         spritePivotPx = originalSprite.pivot;
         ppu = originalSprite.pixelsPerUnit;
 
-        int w = (int)spriteRectPx.width;
-        int h = (int)spriteRectPx.height;
+        texW = (int)spriteRectPx.width;
+        texH = (int)spriteRectPx.height;
 
-        runtimeTex = new Texture2D(w, h, TextureFormat.RGBA32, false, false);
-        Color[] block = src.GetPixels((int)spriteRectPx.x, (int)spriteRectPx.y, w, h);
-        runtimeTex.SetPixels(block);
-        runtimeTex.Apply();
+        runtimeTex = new Texture2D(texW, texH, TextureFormat.RGBA32, false, false);
 
-        Sprite newSprite = Sprite.Create(runtimeTex, new Rect(0, 0, w, h),
-            spritePivotPx / new Vector2(w, h), ppu, 0, SpriteMeshType.Tight);
+        // Lấy toàn bộ pixels 1 lần
+        Color32[] srcPixels = src.GetPixels32();
+        pixelsAll = new Color32[texW * texH];
+
+        int srcW = src.width;
+        int x0 = (int)spriteRectPx.x;
+        int y0 = (int)spriteRectPx.y;
+
+        for (int y = 0; y < texH; y++)
+        {
+            int srcY = y0 + y;
+            int rowDst = y * texW;
+            int rowSrc = srcY * srcW;
+            for (int x = 0; x < texW; x++)
+            {
+                int srcX = x0 + x;
+                pixelsAll[rowDst + x] = srcPixels[rowSrc + srcX];
+            }
+        }
+
+        runtimeTex.SetPixels32(pixelsAll);
+        runtimeTex.Apply(false);
+
+        Sprite newSprite = Sprite.Create(
+            runtimeTex,
+            new Rect(0, 0, texW, texH),
+            spritePivotPx / new Vector2(texW, texH),
+            ppu,
+            0,
+            SpriteMeshType.Tight   // để Unity sinh collider sát hình hơn
+        );
         sr.sprite = newSprite;
     }
 
-    // Xoá alpha tại vị trí chuột
+    // ==========================
+    //   XOÁ PIXEL THEO WORLD POS
+    // ==========================
     bool PaintEraseAtWorld(Vector2 worldPos)
     {
-        if (!runtimeTex) return false;
+        if (runtimeTex == null || pixelsAll == null) return false;
 
         Vector2 local = sr.transform.InverseTransformPoint(worldPos);
         Vector2 px = local * ppu + spritePivotPx;
 
         int cx = Mathf.RoundToInt(px.x);
         int cy = Mathf.RoundToInt(px.y);
-        int w = runtimeTex.width, h = runtimeTex.height;
-        int r = brushRadius, r2 = r * r;
+
+        int r = brushRadius;
+        int r2 = r * r;
         bool changed = false;
 
-        int xMin = Mathf.Clamp(cx - r, 0, w - 1);
-        int xMax = Mathf.Clamp(cx + r, 0, w - 1);
-        int yMin = Mathf.Clamp(cy - r, 0, h - 1);
-        int yMax = Mathf.Clamp(cy + r, 0, h - 1);
+        int xMin = Mathf.Clamp(cx - r, 0, texW - 1);
+        int xMax = Mathf.Clamp(cx + r, 0, texW - 1);
+        int yMin = Mathf.Clamp(cy - r, 0, texH - 1);
+        int yMax = Mathf.Clamp(cy + r, 0, texH - 1);
 
-        Color[] pixels = runtimeTex.GetPixels(xMin, yMin, xMax - xMin + 1, yMax - yMin + 1);
-        int bw = xMax - xMin + 1, bh = yMax - yMin + 1;
-
-        for (int j = 0; j < bh; j++)
+        for (int y = yMin; y <= yMax; y++)
         {
-            for (int i = 0; i < bw; i++)
+            int dy = y - cy;
+            int dy2 = dy * dy;
+            int row = y * texW;
+
+            for (int x = xMin; x <= xMax; x++)
             {
-                int idx = j * bw + i;
-                int dx = (xMin + i) - cx;
-                int dy = (yMin + j) - cy;
-                if (dx * dx + dy * dy <= r2)
+                int dx = x - cx;
+                if (dx * dx + dy2 > r2) continue;
+
+                int idx = row + x;
+                var c = pixelsAll[idx];
+                if (c.a > 0)
                 {
-                    var c = pixels[idx];
-                    if (c.a > 0f)
-                    {
-                        c.a = 0f;
-                        pixels[idx] = c;
-                        changed = true;
-                    }
+                    c.a = 0;
+                    pixelsAll[idx] = c;
+                    changed = true;
                 }
             }
         }
 
-        if (changed)
-        {
-            runtimeTex.SetPixels(xMin, yMin, bw, bh, pixels);
-            runtimeTex.Apply(false);
-        }
         return changed;
     }
 
-    // Hiển thị bán kính cọ trong Scene View
+    // ==========================
+    //   REBUILD COLLIDER
+    // ==========================
+    void RebuildCollider()
+    {
+        if (!poly) poly = GetComponent<PolygonCollider2D>();
+        if (!poly) poly = gameObject.AddComponent<PolygonCollider2D>();
+
+        // Huỷ rồi tạo lại để Unity tự sinh shape mới từ sprite/texture hiện tại
+        Destroy(poly);
+        poly = gameObject.AddComponent<PolygonCollider2D>();
+        poly.isTrigger = false;
+    }
+
+    // ==========================
+    //   GIZMO CỌ
+    // ==========================
     void OnDrawGizmosSelected()
     {
         if (!showBrushGizmo) return;
 
-        // đảm bảo có SpriteRenderer
         if (!sr) sr = GetComponent<SpriteRenderer>();
-
-        Camera cam = Camera.main;
+        if (cam == null) cam = Camera.main;
         if (!cam) return;
 
         Vector3 mouse = Input.mousePosition;
-
-        // tránh NaN / Infinity
         if (float.IsNaN(mouse.x) || float.IsNaN(mouse.y) ||
             float.IsInfinity(mouse.x) || float.IsInfinity(mouse.y))
             return;
 
-        // khoảng cách từ camera đến sprite, dùng làm z cho ScreenToWorldPoint
         float z = Mathf.Abs((sr ? sr.transform.position.z : 0f) - cam.transform.position.z);
         if (z < cam.nearClipPlane) z = cam.nearClipPlane + 0.01f;
         if (z > cam.farClipPlane) z = cam.farClipPlane - 0.01f;
         mouse.z = z;
 
         Vector3 world = cam.ScreenToWorldPoint(mouse);
-
-        // giữ gizmo trên mặt phẳng sprite
-        if (sr) world.z = sr.transform.position.z;
-        else world.z = 0;
+        world.z = sr ? sr.transform.position.z : 0f;
 
         Gizmos.color = Color.yellow;
         float r = (sr && sr.sprite)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        Application.targetFrameRate = 60;
+        
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
@@ -31,7 +34,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        SetState(GameState.Gameplay);
+        
+        UIManager.Instance.OpenUI<PanelLoading>();
+        StartCoroutine(WaitGamePlay());
     }
 
     void Update()
@@ -72,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     public void NextLV()
     {
+        
         LevelManager.Instance?.NextLevel();
     }
 
@@ -127,6 +133,13 @@ public class GameManager : MonoBehaviour
         //UIManager.Instance.CloseUI<CanvasWin>();
 
         // Reset các thứ gameplay nếu có
+    }
+
+    IEnumerator WaitGamePlay()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        SetState(GameState.Gameplay);
     }
 
 }

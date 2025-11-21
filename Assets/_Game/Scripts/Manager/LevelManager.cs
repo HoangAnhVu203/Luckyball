@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -147,6 +148,15 @@ public class LevelManager : MonoBehaviour
         OnLevelLoaded?.Invoke(CurrentLevelGO, CurrentIndex);
 
         Debug.Log($"[LevelManager] Loaded level index: {CurrentIndex}");
+        if(CurrentIndex == 0)
+        {
+            StartCoroutine(Waitlevel());
+        }
+        else
+        {
+            UIManager.Instance.GetUI<CanvasGameplay>()?.ShowLevel(LevelManager.Instance.CurrentIndex);
+        }
+        
     }
 
     // ==========================
@@ -172,5 +182,13 @@ public class LevelManager : MonoBehaviour
             if (n.Contains("bubble") || n.Contains("bombfragment") || n.Contains("debris"))
                 Destroy(go);
         }
+
+        
     }
+    IEnumerator Waitlevel()
+        {
+            yield return new WaitForSeconds(1.5f);
+
+            UIManager.Instance.GetUI<CanvasGameplay>()?.ShowLevel(LevelManager.Instance.CurrentIndex);
+        }
 }
