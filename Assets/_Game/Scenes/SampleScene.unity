@@ -751,7 +751,7 @@ MonoBehaviour:
   - id: 100
     prefab: {fileID: 2106738269581903309, guid: ac630a9c3e6a342baae59ac01c35602f, type: 3}
   levelRoot: {fileID: 1052875478}
-  saveProgress: 0
+  saveProgress: 1
   loopAtEnd: 1
   defaultStartIndex: 0
   runtimeRoot: {fileID: 1052875478}

@@ -135,6 +135,8 @@ public class LevelManager : MonoBehaviour
 
         CurrentIndex = index;
 
+        HintSystem.Instance?.HideHint();
+
         // 4. Save progress
         if (saveProgress)
         {
