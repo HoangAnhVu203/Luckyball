@@ -67,13 +67,14 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameState.Win:
-                //Time.timeScale = 1f;
                 Erase.Instance.enabled = false;
+                AudioManager.Instance?.PlayWin();     
                 UIManager.Instance.OpenUI<CanvasWin>();
                 Debug.Log("WIN!");
                 break;
         }
     }
+
 
     public void NextLV()
     {

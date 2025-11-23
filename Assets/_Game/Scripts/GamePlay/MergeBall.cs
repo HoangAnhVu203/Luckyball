@@ -64,7 +64,7 @@ public class MergeBall : Singleton<MergeBall>
         TryMerge(collision.collider);
     }
 
-    void OnTriggerEnter2D(Collider2D other) // phòng trường hợp bạn dùng trigger
+    void OnTriggerEnter2D(Collider2D other) 
     {
         TryMerge(other);
     }
@@ -73,44 +73,46 @@ public class MergeBall : Singleton<MergeBall>
     {
         if (_isMerging || other == null) return;
 
-        int myL    = gameObject.layer;
+        int myL = gameObject.layer;
         int otherL = other.gameObject.layer;
 
         // Enemy
         if (otherL == enemyLayer)
         {
             SetGrayOnEnemyHit();
+            AudioManager.Instance?.PlayLose();    
             StartCoroutine(WaitforReplay());
             return;
         }
 
         // Chỉ xử lý nếu là cặp (Blue, Red)
-        bool isPair = 
+        bool isPair =
             (myL == blueLayer && otherL == redLayer) ||
-            (myL == redLayer  && otherL == blueLayer);
+            (myL == redLayer && otherL == blueLayer);
 
         if (!isPair) return;
 
-        // Tránh cả hai vật đều chạy coroutine: chỉ object có InstanceID nhỏ hơn chủ trì merge
         if (gameObject.GetInstanceID() > other.gameObject.GetInstanceID())
             return;
 
-        // Tránh race-condition
         int keyA = gameObject.GetInstanceID();
         int keyB = other.gameObject.GetInstanceID();
         if (_busy.Contains(keyA) || _busy.Contains(keyB)) return;
 
-        _busy.Add(keyA); 
+        _busy.Add(keyA);
         _busy.Add(keyB);
+
+        AudioManager.Instance?.PlayMergeBall();
 
         StartCoroutine(MergeRoutine(other.gameObject));
     }
+
 
     IEnumerator MergeRoutine(GameObject other)
     {
         _isMerging = true;
 
-        // Lấy component bên kia
+
         var otherRB     = other.GetComponent<Rigidbody2D>();
         var otherCol    = other.GetComponent<Collider2D>();
         var otherScript = other.GetComponent<MergeBall>();

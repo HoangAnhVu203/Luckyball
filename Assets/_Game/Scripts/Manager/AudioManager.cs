@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
@@ -8,9 +8,25 @@ public class AudioManager : MonoBehaviour
     public AudioSource musicSource;
     public AudioSource sfxSource;
 
+    [Header("Clips")]
+    public AudioClip bgmGameplay;
+    public AudioClip sfxMergeBall;
+    public AudioClip sfxWin;
+    public AudioClip sfxLose;
+    public AudioClip sfxButton;
+
     void Awake()
     {
-        Instance = this;
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
+        DontDestroyOnLoad(gameObject);
+    }
+
+    void Start()
+    {
+        // auto bật nhạc nền gameplay
+        PlayMusic(bgmGameplay);
     }
 
     public void PlaySFX(AudioClip clip)
@@ -26,9 +42,18 @@ public class AudioManager : MonoBehaviour
         if (clip == null) return;
         if (!IsMusicOn()) return;
 
+        if (musicSource.clip == clip && musicSource.isPlaying) return;
+
         musicSource.clip = clip;
+        musicSource.loop = true;
         musicSource.Play();
     }
+
+    // ---- helper cho game ----
+    public void PlayMergeBall() => PlaySFX(sfxMergeBall);
+    public void PlayWin() => PlaySFX(sfxWin);
+    public void PlayLose() => PlaySFX(sfxLose);
+    public void PlayButton() => PlaySFX(sfxButton);
 
     //---------------- SETTING ----------------//
     public static bool IsSoundOn() => PlayerPrefs.GetInt("SOUND_ON", 1) == 1;
