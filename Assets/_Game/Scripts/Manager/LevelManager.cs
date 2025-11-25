@@ -24,7 +24,7 @@ public class LevelManager : MonoBehaviour
     [Header("Lưu tiến trình")]
     public bool saveProgress = true;
     public bool loopAtEnd = true;
-    public int defaultStartIndex = 0;
+    public int defaultStartIndex = 2;   // level thật đầu tiên (ví dụ 2)
 
     public const string PP_LEVEL_INDEX = "LUCKYBALL_LEVEL";
 
@@ -56,17 +56,9 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        int startIndex = defaultStartIndex;
-
-        if (saveProgress && PlayerPrefs.HasKey(PP_LEVEL_INDEX))
-            startIndex = PlayerPrefs.GetInt(PP_LEVEL_INDEX);
-
-        startIndex = Mathf.Clamp(startIndex, 0, Mathf.Max(0, levels.Count - 1));
-
-        LoadLevel(startIndex);
-    }
+    // ❌ KHÔNG auto LoadLevel trong Start nữa
+    // GameManager sẽ quyết định load demo hay level đã lưu
+    void Start() { }
 
     // ==========================
     //       PUBLIC API 
@@ -83,9 +75,8 @@ public class LevelManager : MonoBehaviour
         if (levels.Count == 0) return;
 
         int next = CurrentIndex + 1;
-
         if (next >= levels.Count)
-            next = loopAtEnd ? 0 : levels.Count - 1;
+            next = loopAtEnd ? defaultStartIndex : levels.Count - 1;
 
         LoadLevel(next);
     }
@@ -123,7 +114,6 @@ public class LevelManager : MonoBehaviour
 
         // 3. Spawn level mới
         LevelEntry entry = levels[index];
-
         if (!entry.prefab)
         {
             Debug.LogError($"[LevelManager] Prefab rỗng tại Level {index}");
@@ -137,8 +127,8 @@ public class LevelManager : MonoBehaviour
 
         HintSystem.Instance?.HideHint();
 
-        // 4. Save progress
-        if (saveProgress)
+        // 4. Save progress (chỉ với level thật, bỏ qua demo < 2)
+        if (saveProgress && CurrentIndex >= 2)
         {
             PlayerPrefs.SetInt(PP_LEVEL_INDEX, CurrentIndex);
             PlayerPrefs.Save();
@@ -150,15 +140,14 @@ public class LevelManager : MonoBehaviour
         OnLevelLoaded?.Invoke(CurrentLevelGO, CurrentIndex);
 
         Debug.Log($"[LevelManager] Loaded level index: {CurrentIndex}");
-        if(CurrentIndex == 0)
+
+        // Chỉ hiện text "Level X" cho level thật
+        if (CurrentIndex >= 2)
         {
-            StartCoroutine(Waitlevel());
+            UIManager.Instance
+                .GetUI<CanvasGameplay>()?
+                .ShowLevel(CurrentIndex);
         }
-        else
-        {
-            UIManager.Instance.GetUI<CanvasGameplay>()?.ShowLevel(LevelManager.Instance.CurrentIndex);
-        }
-        
     }
 
     // ==========================
@@ -167,14 +156,12 @@ public class LevelManager : MonoBehaviour
 
     public void ClearRuntime()
     {
-        // Xoá toàn bộ object runtime (Bubble, Trap, VFX…)
         if (runtimeRoot)
         {
             for (int i = runtimeRoot.childCount - 1; i >= 0; i--)
                 Destroy(runtimeRoot.GetChild(i).gameObject);
         }
 
-        // Xoá bomb fragments nếu có Bomb tạo debris
         var all = FindObjectsOfType<GameObject>();
         foreach (var go in all)
         {
@@ -184,13 +171,5 @@ public class LevelManager : MonoBehaviour
             if (n.Contains("bubble") || n.Contains("bombfragment") || n.Contains("debris"))
                 Destroy(go);
         }
-
-        
     }
-    IEnumerator Waitlevel()
-        {
-            yield return new WaitForSeconds(1.5f);
-
-            UIManager.Instance.GetUI<CanvasGameplay>()?.ShowLevel(LevelManager.Instance.CurrentIndex);
-        }
 }

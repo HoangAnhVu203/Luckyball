@@ -322,8 +322,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -198, y: -149}
-  m_SizeDelta: {x: 130, y: 130}
+  m_AnchoredPosition: {x: -198, y: -133.6}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &655370172712542959
 CanvasRenderer:
@@ -353,7 +353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 906fef4616d4546d98597a6b5e6424bb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bca0d24dd49a640eb8788cac8d5e2f9b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -407,9 +407,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6310600907391128626}
-        m_TargetAssemblyTypeName: HintSystem, Assembly-CSharp
-        m_MethodName: TryUseHint
+      - m_Target: {fileID: 1936281391909950208}
+        m_TargetAssemblyTypeName: CanvasGameplay, Assembly-CSharp
+        m_MethodName: HintBTN
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -781,6 +781,14 @@ MonoBehaviour:
   levelPanel: {fileID: 1954369884375895417}
   levelText: {fileID: 1416963759886823007}
   levelShowTime: 3
+  nextLvButton: {fileID: 8579625579469208377}
+  nextWaitTime: 15
+  nextScaleUp: 1.1
+  nextScaleDuration: 0.3
+  hintButton: {fileID: 57971616197855573}
+  hintWaitTime: 7
+  hintScaleUp: 1.1
+  hintScaleDuration: 0.3
 --- !u!114 &6310600907391128626
 MonoBehaviour:
   m_ObjectHideFlags: 0
