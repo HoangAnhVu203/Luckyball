@@ -46,23 +46,39 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        bool hasSave   = PlayerPrefs.HasKey(LevelManager.PP_LEVEL_INDEX);
-        bool seenDemo  = PlayerPrefs.GetInt(PP_SEEN_DEMO, 0) == 1;
+        var lm = LevelManager.Instance;
+
+        // Nếu đang TẮT saveProgress → coi như reset hoàn toàn
+        if (!lm.saveProgress)
+        {
+            // Xoá level đã lưu + cờ đã xem demo
+            PlayerPrefs.DeleteKey(LevelManager.PP_LEVEL_INDEX);
+            PlayerPrefs.DeleteKey(PP_SEEN_DEMO);
+            PlayerPrefs.Save();
+
+            // Luôn chạy DEMO như lần đầu
+            UIManager.Instance.OpenUI<PanelLoading>();
+            StartCoroutine(WaitStartDemo());
+            return;
+        }
+
+        // ----- ĐOẠN DƯỚI GIỮ NGUYÊN NHƯ HÔM TRƯỚC -----
+        bool hasSave  = PlayerPrefs.HasKey(LevelManager.PP_LEVEL_INDEX);
+        bool seenDemo = PlayerPrefs.GetInt(PP_SEEN_DEMO, 0) == 1;
 
         if (hasSave)
         {
-            // ĐÃ CÓ SAVE -> bỏ qua demo, vào thẳng level đã lưu
+            // Có level đã lưu -> vào thẳng gameplay
             firstStart   = false;
             CurrentState = GameState.Gameplay;
 
             int index = PlayerPrefs.GetInt(LevelManager.PP_LEVEL_INDEX);
             LevelManager.Instance.LoadLevel(index);
-
             UIManager.Instance.OpenUI<CanvasGameplay>();
         }
         else if (seenDemo)
         {
-            // Đã xem demo nhưng chưa có save -> nhảy thẳng vào level thật đầu tiên
+            // Đã xem demo nhưng chưa có save -> vào level thật đầu tiên
             firstStart   = false;
             CurrentState = GameState.Gameplay;
 
@@ -71,11 +87,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Lần đầu mở game -> chạy demo
+            // Lần đầu thực sự -> chạy demo
             UIManager.Instance.OpenUI<PanelLoading>();
             StartCoroutine(WaitStartDemo());
         }
     }
+
 
     void Update()
     {
