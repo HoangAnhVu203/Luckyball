@@ -172,7 +172,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4040
   explosionVFX: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312, type: 3}
-  explosionSfx: {fileID: 0}
+  explosionSfx: {fileID: 8300000, guid: 2971a07a9870e471ba2d5254979e9f6c, type: 3}
   destroyDelay: 0.2
   freezeOnFuse: 1
   enableScaleOnFuse: 1

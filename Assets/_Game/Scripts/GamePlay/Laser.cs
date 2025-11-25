@@ -8,8 +8,9 @@ public class Laser : MonoBehaviour
     public ParticleSystem beamPS;          
     public Transform beamOrigin;           
     public Transform directionRef;         
-    public GameObject explosionPrefab;     // VFX nổ tại điểm chạm
-    public GameObject smokePrefab;         // 🌫️ VFX khói khi ball/enemy bị bắn tan
+    public GameObject explosionPrefab;   
+    public GameObject smokePrefab;   
+    public AudioSource lazerAudio;      
 
     [Header("Ray/Mask")]
     public LayerMask hitMask;              
@@ -48,6 +49,7 @@ public class Laser : MonoBehaviour
 
     void Awake()
     {
+        lazerAudio.mute = false;
         if (!beamPS) beamPS = GetComponentInChildren<ParticleSystem>(true);
         if (!beamOrigin && beamPS) beamOrigin = beamPS.transform;
         if (beamPS) { main = beamPS.main; shape = beamPS.shape; }
@@ -150,6 +152,7 @@ public class Laser : MonoBehaviour
 
             if(hitLayer == layerBlue || hitLayer == layerRed)
             {
+                AudioManager.Instance?.PlayLose();
                 StartCoroutine(WaitReplay());
             }
             if (smokePrefab)

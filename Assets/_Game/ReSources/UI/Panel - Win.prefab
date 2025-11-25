@@ -583,7 +583,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: b631c37a78f274a22b19698d8f8a77ca, type: 3}
-    m_FontSize: 200
+    m_FontSize: 170
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
@@ -594,4 +594,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: AMAZING!
+  m_Text: WELLDONE !

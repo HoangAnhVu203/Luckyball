@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using Spine.Unity;   
+using Spine.Unity;
+using CandyCoded.HapticFeedback.Android;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
@@ -103,6 +104,8 @@ public class MergeBall : Singleton<MergeBall>
         _busy.Add(keyB);
 
         AudioManager.Instance?.PlayMergeBall();
+        
+        HapticFeedback.LightFeedback();
 
         StartCoroutine(MergeRoutine(other.gameObject));
     }

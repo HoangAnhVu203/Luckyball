@@ -660,12 +660,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f95f3d41ca0094ba3385d005705796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSource: {fileID: 0}
-  sfxSource: {fileID: 0}
-  bgmGameplay: {fileID: 0}
-  sfxMergeBall: {fileID: 0}
-  sfxWin: {fileID: 0}
-  sfxLose: {fileID: 0}
+  musicSource: {fileID: 159136206}
+  sfxSource: {fileID: 147025583}
+  bgmGameplay: {fileID: 8300000, guid: 5ba3c290b2ef347ee8deac5a02738bb8, type: 3}
+  sfxMergeBall: {fileID: 8300000, guid: 3a8ddb8a78f7b450dabd3113cd4896dd, type: 3}
+  sfxWin: {fileID: 8300000, guid: 6ab9d91234c21418e8b6240ceab7f64d, type: 3}
+  sfxLose: {fileID: 8300000, guid: 50951def0784e4084939aa8c41077411, type: 3}
   sfxButton: {fileID: 0}
 --- !u!4 &883553876
 Transform:
@@ -676,7 +676,7 @@ Transform:
   m_GameObject: {fileID: 883553874}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.062979735, y: 0.022334699, z: 0.05855978}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1014,7 +1014,7 @@ MonoBehaviour:
   - id: 100
     prefab: {fileID: 2106738269581903309, guid: ac630a9c3e6a342baae59ac01c35602f, type: 3}
   levelRoot: {fileID: 1052875478}
-  saveProgress: 1
+  saveProgress: 0
   loopAtEnd: 1
   defaultStartIndex: 0
   runtimeRoot: {fileID: 1052875478}

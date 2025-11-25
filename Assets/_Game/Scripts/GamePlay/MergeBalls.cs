@@ -160,6 +160,7 @@ public class MergeBalls : MonoBehaviour
         if (_busy.Contains(idA) || _busy.Contains(idB)) return;
         _busy.Add(idA);
         _busy.Add(idB);
+        HapticFeedback.LightFeedback();
 
         StartCoroutine(MergeRoutine(other.gameObject));
     }

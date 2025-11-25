@@ -141,6 +141,7 @@ public class Bomb : MonoBehaviour
 
     void Explode()
     {
+
         // VFX
         if (explosionVFX)
         {
