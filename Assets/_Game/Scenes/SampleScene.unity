@@ -524,9 +524,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   redLayer: RedBall
   blueLayer: BlueBall
-  demoLevelIndices: 0000000001000000
+  demoLevelIndices: 00000000
   demoSwitchDelay: 11
-  firstRealLevelIndex: 2
+  firstRealLevelIndex: 1
 --- !u!4 &419442259
 Transform:
   m_ObjectHideFlags: 0
@@ -818,8 +818,6 @@ MonoBehaviour:
   levels:
   - id: 0
     prefab: {fileID: 2776973834315384726, guid: 5e941f4cc602b4f5b8ab6cb08bfe9003, type: 3}
-  - id: 00
-    prefab: {fileID: 1288209091288064457, guid: 20ac74e85494d490f967db17d39f8550, type: 3}
   - id: 1
     prefab: {fileID: 9033953348206768080, guid: ea8622cacece24a718409e23ee076ce1, type: 3}
   - id: 2
@@ -1021,7 +1019,7 @@ MonoBehaviour:
   - id: 100
     prefab: {fileID: 2106738269581903309, guid: ac630a9c3e6a342baae59ac01c35602f, type: 3}
   levelRoot: {fileID: 1052875478}
-  saveProgress: 1
+  saveProgress: 0
   loopAtEnd: 1
   defaultStartIndex: 0
   runtimeRoot: {fileID: 1052875478}

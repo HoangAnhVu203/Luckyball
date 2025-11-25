@@ -142,7 +142,7 @@ public class LevelManager : MonoBehaviour
         Debug.Log($"[LevelManager] Loaded level index: {CurrentIndex}");
 
         // Chỉ hiện text "Level X" cho level thật
-        if (CurrentIndex >= 2)
+        if (CurrentIndex >= 1)
         {
             UIManager.Instance
                 .GetUI<CanvasGameplay>()?

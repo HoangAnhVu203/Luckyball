@@ -23,9 +23,9 @@ public class GameManager : MonoBehaviour
     int blueLayerIndex;
 
     [Header("Demo Settings")]
-    public int[] demoLevelIndices = { 0, 1 };   // 2 level demo
+    public int[] demoLevelIndices = { 0};   // 2 level demo
     public float demoSwitchDelay = 11f;
-    public int firstRealLevelIndex = 2;
+    public int firstRealLevelIndex = 1;
 
     const string PP_SEEN_DEMO = "LB_SEEN_DEMO";
 
@@ -153,26 +153,34 @@ public class GameManager : MonoBehaviour
     // Gọi từ PanelDemo.OnClickPlay()
     public void StartRealGame()
     {
+        // dừng loop demo nếu có
         if (demoLoopCo != null)
         {
             StopCoroutine(demoLoopCo);
             demoLoopCo = null;
         }
 
-        firstStart   = false;
+        firstStart = false;
         CurrentState = GameState.Gameplay;
 
         // đánh dấu đã xem demo -> lần sau không vào demo nữa
         PlayerPrefs.SetInt(PP_SEEN_DEMO, 1);
         PlayerPrefs.Save();
 
+        // đóng PanelDemo
         UIManager.Instance.CloseUIDirectly<PanelDemo>();
 
-        // bắt đầu level thật đầu tiên
-        LevelManager.Instance.LoadLevel(firstRealLevelIndex);
+        // --- BẮT ĐẦU REAL GAME TỪ LV1 ---
+        int targetIndex = Mathf.Clamp(
+            firstRealLevelIndex,
+            0,
+            LevelManager.Instance.levels.Count - 1
+        );
 
+        LevelManager.Instance.LoadLevel(targetIndex);   // ở đây = 1 => LV1
         UIManager.Instance.OpenUI<CanvasGameplay>();
     }
+
 
     // =============== STATE CONTROL ===============
 

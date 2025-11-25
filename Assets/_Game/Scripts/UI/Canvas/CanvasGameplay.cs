@@ -89,7 +89,7 @@ public class CanvasGameplay : UICanvas
     IEnumerator ShowLevelRoutine(int levelIndex)
     {
         if (levelPanel) levelPanel.SetActive(true);
-        if (levelText) levelText.text = $"Level {levelIndex  - 1}";
+        if (levelText) levelText.text = $"Level {levelIndex }";
 
         yield return new WaitForSeconds(levelShowTime);
 
